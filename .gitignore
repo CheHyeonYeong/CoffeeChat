@@ -1,0 +1,7 @@
+# Ignore IDE or build tool directories
+/build
+.gradle
+/out
+
+# Ignore actual application properties containing credentials
+coffeeChat/src/main/resources/application.properties

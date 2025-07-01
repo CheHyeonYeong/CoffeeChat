@@ -5,7 +5,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -13,6 +16,7 @@ import java.util.Map;
 
 @Service
 public class AlimtalkService {
+    private static final Logger log = LoggerFactory.getLogger(AlimtalkService.class);
     @Value("${solapi.api.key:YOUR_API_KEY}")
     private String apiKey;
 
@@ -36,6 +40,12 @@ public class AlimtalkService {
 
         // Actual API endpoint may differ.
         String url = "https://api.solapi.com/messages/v4/send";
-        restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        try {
+            restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            log.info("Alimtalk sent to {} with template {}", to, templateCode);
+        } catch (RestClientException e) {
+            log.error("Failed to send Alimtalk to {}: {}", to, e.getMessage());
+            throw e;
+        }
     }
 }

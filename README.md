@@ -28,6 +28,8 @@ solapi.api.key=YOUR_API_KEY
 solapi.api.secret=YOUR_API_SECRET
 ```
 
+
+
 환경 변수나 외부 설정 파일을 통해서도 같은 이름의 프로퍼티를 지정할 수 있습니다.
 
 ## 간단한 사용 예시
@@ -44,4 +46,3 @@ solapi.api.secret=YOUR_API_SECRET
 cd coffeeChat
 ./gradlew test
 ```
-

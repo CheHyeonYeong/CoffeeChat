@@ -3,6 +3,7 @@ package com.backend.coffeeChat.controller;
 import com.backend.coffeeChat.dto.ApplyRequest;
 import com.backend.coffeeChat.repository.ApplicationRepository;
 import com.backend.coffeeChat.service.AlimtalkService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +20,23 @@ public class CoffeeChatController {
     private final ApplicationRepository repository;
     private final AlimtalkService alimtalkService;
 
-    public CoffeeChatController(ApplicationRepository repository, AlimtalkService alimtalkService) {
+    private final String acceptBaseUrl;
+    private final String adminPhone;
+    private final String templateAdmin;
+    private final String templateAccept;
+
+    public CoffeeChatController(ApplicationRepository repository,
+                                AlimtalkService alimtalkService,
+                                @Value("${app.accept.base-url:https://your.server/accept}") String acceptBaseUrl,
+                                @Value("${app.admin.phone:ADMIN_PHONE}") String adminPhone,
+                                @Value("${app.template.admin:TEMPLATE_ADMIN}") String templateAdmin,
+                                @Value("${app.template.accept:TEMPLATE_USER_ACCEPT}") String templateAccept) {
         this.repository = repository;
         this.alimtalkService = alimtalkService;
+        this.acceptBaseUrl = acceptBaseUrl;
+        this.adminPhone = adminPhone;
+        this.templateAdmin = templateAdmin;
+        this.templateAccept = templateAccept;
     }
 
     @GetMapping("/apply")
@@ -38,8 +53,8 @@ public class CoffeeChatController {
         vars.put("name", saved.getName());
         vars.put("time", saved.getPreferredTime());
         vars.put("topic", saved.getTopic());
-        vars.put("acceptUrl", "https://your.server/accept?id=" + saved.getId());
-        alimtalkService.sendAlimtalk("ADMIN_PHONE", "TEMPLATE_ADMIN", vars);
+        vars.put("acceptUrl", acceptBaseUrl + "?id=" + saved.getId());
+        alimtalkService.sendAlimtalk(adminPhone, templateAdmin, vars);
         return "redirect:/apply";
     }
 
@@ -51,7 +66,7 @@ public class CoffeeChatController {
             vars.put("name", request.getName());
             vars.put("time", request.getPreferredTime());
             vars.put("topic", request.getTopic());
-            alimtalkService.sendAlimtalk(request.getContact(), "TEMPLATE_USER_ACCEPT", vars);
+            alimtalkService.sendAlimtalk(request.getContact(), templateAccept, vars);
         }
         return "accept"; // a simple JSP message page (could be created)
     }
